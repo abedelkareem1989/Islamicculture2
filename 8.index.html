@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0c6b58" />
+  <meta name="description" content="تطبيق ويب تفاعلي لقراءة حل ألفاظ العقيدة الطحاوية" />
+  <title>حل ألفاظ العقيدة الطحاوية</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;500;600;700;800&family=Noto+Kufi+Arabic:wght@400;500;600;700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+
+  <style>
+    :root {
+      --emerald-950:#063f35;
+      --emerald-900:#075443;
+      --emerald-800:#0c6b58;
+      --emerald-700:#0f816a;
+      --gold-500:#c99b3c;
+      --gold-400:#d9b45e;
+      --cream:#f7f2e8;
+      --paper:#fffdf8;
+      --surface:#ffffff;
+      --surface-2:#f3f5f3;
+      --text:#1f2925;
+      --muted:#66736d;
+      --line:rgba(12,107,88,.14);
+      --shadow:0 14px 38px rgba(25,45,37,.10);
+      --font-body:'Cairo',sans-serif;
+      --reader-size:20px;
+      --radius:22px;
+    }
+    [data-theme="dark"] {
+      --cream:#0f1714;
+      --paper:#151f1b;
+      --surface:#17241f;
+      --surface-2:#111b17;
+      --text:#f5f4ef;
+      --muted:#aab8b1;
+      --line:rgba(217,180,94,.14);
+      --shadow:0 18px 44px rgba(0,0,0,.28);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:var(--cream);color:var(--text);font-family:var(--font-body);transition:background .25s,color .25s;min-height:100vh}
+    button,input,select{font:inherit}
+    button{cursor:pointer}
+    a{color:inherit}
+    .app-shell{min-height:100vh}
+    .topbar{position:sticky;top:0;z-index:60;background:color-mix(in srgb,var(--surface) 92%, transparent);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+    .topbar-inner{max-width:1180px;margin:auto;display:flex;align-items:center;gap:14px;padding:12px 20px}
+    .brand{display:flex;align-items:center;gap:11px;min-width:max-content;cursor:pointer}
+    .brand-mark{width:44px;height:44px;border-radius:15px;background:linear-gradient(145deg,var(--emerald-800),var(--emerald-950));display:grid;place-items:center;color:#fff;box-shadow:0 8px 24px rgba(12,107,88,.23);font-size:19px}
+    .brand strong{display:block;font-size:15px}.brand small{display:block;color:var(--muted);font-size:11px;margin-top:1px}
+    .search-wrap{flex:1;position:relative}
+    .search-box{width:100%;border:1px solid var(--line);background:var(--surface-2);color:var(--text);padding:12px 44px 12px 14px;border-radius:16px;outline:none;transition:.2s}
+    .search-box:focus{border-color:var(--emerald-700);box-shadow:0 0 0 4px rgba(12,107,88,.08)}
+    .search-icon{position:absolute;right:16px;top:50%;transform:translateY(-50%);color:var(--muted)}
+    .nav-actions{display:flex;gap:8px}
+    .icon-btn{border:1px solid var(--line);background:var(--surface);color:var(--text);width:44px;height:44px;border-radius:14px;display:grid;place-items:center;transition:transform .16s,background .2s,border-color .2s;position:relative;overflow:hidden}
+    .icon-btn:hover{transform:translateY(-2px);border-color:rgba(201,155,60,.48)}
+    .icon-btn.active{background:var(--emerald-800);color:#fff;border-color:transparent}
+    .page{display:none;max-width:1180px;margin:auto;padding:28px 20px 70px;animation:fadeIn .28s ease}.page.active{display:block}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+    .hero{background:linear-gradient(135deg,var(--emerald-950),var(--emerald-800));color:#fff;border-radius:30px;padding:34px;position:relative;overflow:hidden;box-shadow:var(--shadow);margin-bottom:26px}
+    .hero:before,.hero:after{content:"";position:absolute;border:1px solid rgba(217,180,94,.20);border-radius:50%;width:220px;height:220px;left:-70px;top:-75px}.hero:after{width:150px;height:150px;left:10px;top:55px}
+    .hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.16);padding:7px 12px;border-radius:999px;font-size:12px;margin-bottom:12px}
+    .hero h1{font-size:clamp(27px,5vw,45px);line-height:1.4;margin:0 0 9px;font-family:'Amiri',serif;position:relative}.hero p{max-width:760px;margin:0;color:rgba(255,255,255,.82);line-height:1.9;position:relative}
+    .continue-box{margin-top:20px;display:none;position:relative}.continue-box.show{display:flex}.continue-btn{border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.12);color:#fff;padding:10px 14px;border-radius:14px;display:inline-flex;gap:9px;align-items:center}
+    .section-head{display:flex;justify-content:space-between;align-items:end;gap:14px;margin:16px 2px}.section-head h2{margin:0;font-size:22px}.section-head span{color:var(--muted);font-size:13px}
+    .cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:17px}
+    .card{border:1px solid var(--line);background:var(--surface);border-radius:var(--radius);padding:20px;box-shadow:0 7px 22px rgba(27,48,40,.05);transition:transform .2s,box-shadow .2s,border-color .2s;position:relative;overflow:hidden;cursor:pointer;min-height:205px;display:flex;flex-direction:column}
+    .card:hover{transform:translateY(-5px);box-shadow:var(--shadow);border-color:rgba(201,155,60,.35)}.card:active{transform:scale(.985)}
+    .card-icon{width:49px;height:49px;border-radius:16px;display:grid;place-items:center;background:rgba(12,107,88,.09);color:var(--emerald-800);font-size:20px;margin-bottom:16px}.card h3{margin:0 0 8px;font-size:17px}.card p{margin:0 0 16px;color:var(--muted);font-size:13px;line-height:1.85}.card-meta{margin-top:auto;display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:11px}.card-arrow{color:var(--gold-500)}
+    .ripple{position:absolute;border-radius:50%;transform:scale(0);background:rgba(201,155,60,.23);animation:ripple .55s linear;pointer-events:none}@keyframes ripple{to{transform:scale(4);opacity:0}}
+    .empty-state{background:var(--surface);border:1px dashed var(--line);border-radius:var(--radius);padding:50px 20px;text-align:center;color:var(--muted)}.empty-state i{font-size:34px;color:var(--gold-500);margin-bottom:12px}.empty-state h3{color:var(--text);margin:7px 0}
+    .reader-top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:16px}.back-link{border:0;background:transparent;color:var(--emerald-800);padding:8px 0;font-weight:700;display:inline-flex;gap:8px;align-items:center}.reader-title{font-family:'Amiri',serif;font-size:clamp(28px,5vw,42px);margin:8px 0 8px;line-height:1.45}.reader-desc{color:var(--muted);line-height:1.8;margin:0}.stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:13px}.stat{background:var(--surface);border:1px solid var(--line);padding:7px 10px;border-radius:11px;font-size:12px;color:var(--muted)}
+    .reader-tools{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.tool-btn{height:42px;min-width:42px;padding:0 12px;border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:12px;display:inline-flex;align-items:center;justify-content:center;gap:7px}.tool-btn:hover{border-color:rgba(201,155,60,.55)}.tool-btn.favorite.active{color:#b78114;background:rgba(201,155,60,.10)}
+    .reading-progress{position:fixed;top:69px;right:0;left:0;height:3px;z-index:70;background:transparent}.reading-progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold-500),var(--emerald-700));transition:width .08s linear}
+    .article{background:var(--paper);border:1px solid var(--line);border-radius:28px;box-shadow:var(--shadow);padding:clamp(22px,5vw,52px);font-size:var(--reader-size);line-height:2.15;max-width:930px;margin:24px auto 0}.article p{margin:0 0 1.35em;white-space:pre-wrap}.article p:last-child{margin-bottom:0}.article a{color:var(--emerald-700);text-decoration-thickness:1px;text-underline-offset:4px;word-break:break-word}
+    .settings-panel{max-width:780px;margin:auto;background:var(--surface);border:1px solid var(--line);border-radius:26px;box-shadow:var(--shadow);padding:25px}.setting-row{display:grid;grid-template-columns:220px 1fr;gap:20px;align-items:center;padding:18px 0;border-bottom:1px solid var(--line)}.setting-row:last-child{border-bottom:0}.setting-label strong{display:block;margin-bottom:4px}.setting-label small{color:var(--muted)}.segmented{display:flex;gap:8px;flex-wrap:wrap}.seg-btn{border:1px solid var(--line);background:var(--surface-2);color:var(--text);padding:9px 12px;border-radius:12px}.seg-btn.active{background:var(--emerald-800);color:#fff;border-color:transparent}.select{width:100%;padding:11px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);color:var(--text)}.range{width:100%;accent-color:var(--emerald-700)}.danger-btn{border:0;background:#9b3f3f;color:#fff;padding:11px 15px;border-radius:12px}
+    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.46);z-index:100;display:none;align-items:flex-start;justify-content:center;padding:90px 16px 20px}.modal-backdrop.show{display:flex;animation:fadeIn .2s}.search-modal{width:min(760px,100%);max-height:75vh;overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:24px;box-shadow:0 28px 80px rgba(0,0,0,.22);padding:16px}.search-modal-head{display:flex;justify-content:space-between;align-items:center;padding:5px 5px 12px}.search-result{border:1px solid var(--line);border-radius:16px;padding:14px;margin-top:10px;cursor:pointer;transition:.16s}.search-result:hover{transform:translateY(-2px);border-color:rgba(201,155,60,.42)}.search-result h4{margin:0 0 5px}.search-result p{margin:0;color:var(--muted);font-size:12px;line-height:1.8}.search-count{font-size:12px;color:var(--muted)}
+    .toast{position:fixed;left:20px;bottom:20px;z-index:120;background:var(--emerald-950);color:#fff;padding:11px 15px;border-radius:13px;box-shadow:var(--shadow);opacity:0;transform:translateY(15px);pointer-events:none;transition:.25s}.toast.show{opacity:1;transform:none}
+    .to-top{position:fixed;left:20px;bottom:76px;z-index:50;width:46px;height:46px;border:0;border-radius:15px;background:var(--emerald-800);color:#fff;box-shadow:var(--shadow);display:none}.to-top.show{display:grid;place-items:center;animation:fadeIn .2s}
+    .page-title{margin:4px 0 7px;font-size:28px}.page-subtitle{margin:0 0 22px;color:var(--muted)}
+    @media (max-width:900px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.reader-top{display:block}.reader-tools{justify-content:flex-start;margin-top:14px}.setting-row{grid-template-columns:1fr}}
+    @media (max-width:620px){.topbar-inner{padding:10px 12px;gap:8px}.brand strong,.brand small{display:none}.brand-mark{width:42px;height:42px}.nav-actions{gap:5px}.icon-btn{width:42px;height:42px}.page{padding:20px 13px 65px}.hero{padding:26px 20px;border-radius:24px}.cards{grid-template-columns:1fr}.card{min-height:180px}.reader-tools .tool-btn span{display:none}.reader-tools .tool-btn{padding:0;width:42px}.reading-progress{top:63px}.article{border-radius:20px;padding:22px 18px}.settings-panel{padding:18px}.modal-backdrop{padding-top:75px}.search-modal{border-radius:19px}.to-top{left:14px}}
+  </style>
+</head>
+<body>
+<div class="app-shell">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand" id="brandHome" role="button" tabindex="0" aria-label="العودة إلى الصفحة الرئيسية">
+        <div class="brand-mark"><i class="fa-solid fa-book-quran"></i></div>
+        <div><strong>القراءة الإسلامية</strong><small>حل ألفاظ العقيدة الطحاوية</small></div>
+      </div>
+      <div class="search-wrap">
+        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+        <input id="globalSearch" class="search-box" type="search" placeholder="ابحث في العناوين والمحتوى..." autocomplete="off" />
+      </div>
+      <nav class="nav-actions" aria-label="التنقل">
+        <button class="icon-btn" id="homeBtn" title="الرئيسية" aria-label="الرئيسية"><i class="fa-solid fa-house"></i></button>
+        <button class="icon-btn" id="favoritesBtn" title="المفضلة" aria-label="المفضلة"><i class="fa-solid fa-bookmark"></i></button>
+        <button class="icon-btn" id="settingsBtn" title="الإعدادات" aria-label="الإعدادات"><i class="fa-solid fa-gear"></i></button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="reading-progress" id="readingProgress" aria-hidden="true"><span></span></div>
+
+  <main>
+    <section id="homePage" class="page active">
+      <div class="hero">
+        <div class="hero-badge"><i class="fa-solid fa-star-and-crescent"></i> مكتبة قراءة تفاعلية</div>
+        <h1>حل ألفاظ العقيدة الطحاوية</h1>
+        <p>تصفّح الموضوعات، وابحث داخل النص الكامل، واحفظ الأقسام المفضلة، وتابع القراءة من الموضع الذي توقفت عنده.</p>
+        <div id="continueBox" class="continue-box"><button id="continueBtn" class="continue-btn"><i class="fa-solid fa-clock-rotate-left"></i><span id="continueText"></span></button></div>
+      </div>
+      <div class="section-head"><h2>جميع الأقسام</h2><span id="sectionsCount"></span></div>
+      <div id="cardsGrid" class="cards"></div>
+    </section>
+
+    <section id="sectionPage" class="page">
+      <div class="reader-top">
+        <div>
+          <button class="back-link" id="backHome"><i class="fa-solid fa-arrow-right"></i> العودة إلى الأقسام</button>
+          <h1 id="readerTitle" class="reader-title"></h1>
+          <p id="readerDesc" class="reader-desc"></p>
+          <div class="stats">
+            <span class="stat"><i class="fa-solid fa-align-right"></i> <span id="wordCount"></span> كلمة</span>
+            <span class="stat"><i class="fa-regular fa-clock"></i> <span id="readTime"></span> دقيقة قراءة</span>
+            <span class="stat"><i class="fa-regular fa-file-lines"></i> <span id="paragraphCount"></span> فقرة</span>
+          </div>
+        </div>
+        <div class="reader-tools" aria-label="أدوات القراءة">
+          <button class="tool-btn" id="copyBtn" title="نسخ المحتوى"><i class="fa-regular fa-copy"></i><span>نسخ</span></button>
+          <button class="tool-btn" id="shareBtn" title="مشاركة"><i class="fa-solid fa-share-nodes"></i><span>مشاركة</span></button>
+          <button class="tool-btn favorite" id="favoriteBtn" title="المفضلة"><i class="fa-regular fa-bookmark"></i><span>مفضلة</span></button>
+          <button class="tool-btn" id="fontMinus" title="تصغير الخط"><i class="fa-solid fa-minus"></i><span>تصغير</span></button>
+          <button class="tool-btn" id="fontPlus" title="تكبير الخط"><i class="fa-solid fa-plus"></i><span>تكبير</span></button>
+        </div>
+      </div>
+      <article id="articleContent" class="article"></article>
+    </section>
+
+    <section id="favoritesPage" class="page">
+      <h1 class="page-title">المفضلة</h1>
+      <p class="page-subtitle">الأقسام التي حفظتها للرجوع إليها بسرعة.</p>
+      <div id="favoritesGrid" class="cards"></div>
+    </section>
+
+    <section id="settingsPage" class="page">
+      <h1 class="page-title">الإعدادات</h1>
+      <p class="page-subtitle">خصص تجربة القراءة كما تناسبك، وسيتم حفظ الخيارات تلقائيًا.</p>
+      <div class="settings-panel">
+        <div class="setting-row">
+          <div class="setting-label"><strong>المظهر</strong><small>التبديل بين الوضع النهاري والليلي</small></div>
+          <div class="segmented"><button class="seg-btn" data-theme-choice="light"><i class="fa-regular fa-sun"></i> نهاري</button><button class="seg-btn" data-theme-choice="dark"><i class="fa-regular fa-moon"></i> ليلي</button></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-label"><strong>نوع الخط</strong><small>اختر خط القراءة المفضل</small></div>
+          <select id="fontSelect" class="select">
+            <option value="Cairo">Cairo</option><option value="Tajawal">Tajawal</option><option value="Noto Kufi Arabic">Noto Kufi Arabic</option><option value="Amiri">Amiri</option>
+          </select>
+        </div>
+        <div class="setting-row">
+          <div class="setting-label"><strong>حجم الخط</strong><small><span id="fontSizeLabel"></span> بكسل</small></div>
+          <input id="fontSizeRange" class="range" type="range" min="16" max="30" step="1" />
+        </div>
+        <div class="setting-row">
+          <div class="setting-label"><strong>إعادة الضبط</strong><small>إرجاع إعدادات المظهر والخط إلى القيم الافتراضية</small></div>
+          <div><button id="resetSettings" class="danger-btn"><i class="fa-solid fa-rotate-left"></i> إعادة ضبط الإعدادات</button></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<button id="toTop" class="to-top" title="العودة إلى الأعلى" aria-label="العودة إلى الأعلى"><i class="fa-solid fa-arrow-up"></i></button>
+<div id="searchBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-label="نتائج البحث">
+  <div class="search-modal">
+    <div class="search-modal-head"><div><strong>نتائج البحث</strong> <span id="searchCount" class="search-count"></span></div><button id="closeSearch" class="icon-btn" aria-label="إغلاق"><i class="fa-solid fa-xmark"></i></button></div>
+    <div id="searchResults"></div>
+  </div>
+</div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+const sections = [{"id": "intro", "title": "مقدمة الكتاب وبيان عقيدة أهل السنة والجماعة", "description": "افتتاح الكتاب والتعريف ببيان عقيدة أهل السنة والجماعة وأئمتها.", "icon": "fa-book-open", "paragraphs": ["حل ألفاظ العقيدة الطحاوية", "بسم الله الرحمٰن الرحيم", "الحمد لله رب العالمين، والصلاة والسلام على سيد الأولين والآخرين، قائد الغر المحجلين، إمام الأتقياء العارفين، سيدنا وقائدنا وحبيبنا ونور أبصارنا محمد النبي العربي الأمي الأمين، العالي القدر، العظيم الجاه، وعلى آله وصحبه ومن والاه.", "يقول الإمام أبو جعفر أحـمد بن سلامة الطحاوى المصرى المولود سنة مائتيـن وتسع وعشرين والمتوفـى سنة ثلاثـمائة وإحدى وعشرين", "(هذا ذكر بيان عقيدة أهل السنة والـجماعة) أى ما أذكره هنا هو عقيدة أهل السنة والـجماعة وأهل السنة هم الصحابة ومن تبعهم فـى المعتقد أى أصول الاعتقاد وأما الـجماعة فهم جـمهور الأمة أى معظمهم لأن الـجمهور ثبتوا على ما كان عليه الصحابة من حيث المعتقد(على مذهب فقهاء الملة) أى ملة الإسلام أى أضع هذه الرسالة على أسلوب هؤلاء الأئمة الثلاثة أى متبعا طريقتهم ومـختارا لعباراتـهم فـى الـبيان والإفصاح (أبـى حنيفة النعمان بن ثابت الكوفـى) وهو الإمام المجتهد ولد سنة ثـمانيـن للهجرة وتوفـى سنة مائة وخـمسين (وأبـى يوسف يعقوب بن إبراهيم الأنصارى) وهو الإمام المجتهد أكـبـر تلاميذ أبـى حنيفة توفـى سنة مائة واثنتيـن وثـمانيـن للهجرة (وأبـى عبد اللـه مـحمد بن الـحسن الشيبانـى) وهو الإمام المجتهد تلميذ أبـى حنيفة توفـى سنة مائة وتسع وثـمانيـن للهجرة (رضوان اللـه عليهم أجـمعيـن وما يعـتقدون) أى ما يعـتقده أهل السنة (من أصول الدين ويدينون به لرب العالميـن) أى يتخذونه دينا ويطلبون به الـجزاء من اللـه مالك العالميـن أى مالك كل ما دخل فـى الوجود."]}, {"id": "tawhid", "title": "توحيد الله وصفاته", "description": "شرح توحيد الله تعالى وصفاته وأزلية صفاته ومشيئته وقدرته.", "icon": "fa-star-and-crescent", "paragraphs": ["يقول الإمام الطحاوى رحـمه اللـه (نقول فـى توحيد اللـه معتـقدين بتوفيق اللـه) أى نقول فـى شرح وبيان اعتقادنا فـى توحيد الـخالق سبحانه (إن اللـه واحد) أى (لا شريك له) فـى ذاته ولا فـى صفاته ولا فـى فعله (ولا شىء مثله) أى لا يوجد شىء يـماثله من جـميع الوجوه ولا من بعض الوجوه فلا يوجد ذات مثل ذاته وليس لغـيـره صفة كصفته أو فعل كـفعله (ولا شىء يعجزه) وفـى هذا رد على المعتزلة القائليـن بأن اللـه كان قادرا على خلق حركاتنا وسكناتنا قبل أن يعطـينا القدرة عليها فلما أعطانـا القدرة عليها صار عاجزا عنها وهذا من أشنع الكفر والعياذ باللـه (ولا إلــٰه غـيـره) أى لا خالق سواه وقيل لا معبود بـحق إلا هوأى لا يستحق أحد أن يعبد أى أن يتذلل له نـهاية الـتذلل إلا اللـه لأنالإلــٰه فـى أصل اللغة المعبود بـحق وهو اللـه فلا يـجوز إطلاقه على غـيـر اللـه (قديـم بلا ابتداء) فلم يسبق وجوده عدم (دائم بلا انتهاء) فلا يلحقه عدم ولا شريك للـه فـى الديـمومية أى البقاء إلـى ما لا نـهاية لأنبقاء اللـه بقاء ذاتـى أى ليس بإبقاء غـيـره له(لا يفنـى ولا يبيد) والمعـنـى واحد لكنه جـمع بيـن اللفظـيـن تـأكيدا لدوام بقائه (ولا يكون إلا ما يريد) أى لا يدخل شىء فـى الوجود إلا بإرادة اللـه ومشيئته سواء فـى ذلك الـخيـر والشر والطاعة والمعصية والكفر والإيـمان (لا تبلغه الأوهام) أى لا تصل إلـيه أوهام الـخلائق أى تصوراتـهم (ولا تدركه الأفهام) أى لا تـحيط به العقول أى عقولـهم لا تعرف حقيقته (ولا يشبه الأنام) أى لا يشبهالله الـخلقبأى وجه من الوجوهليس حجما ولا يوصف بصفات الأحجام (حى لا يـموت) أى متصف بـحياة أزلـية أبديـة لا بداية ولا نـهاية لـها ليست بروح وجسد (قيوم لا ينام) والقيوم أى الدائم الذى لا يزول وقيل القائم بتدبيـر خلقه وهو من الأسـماء الـخاصة باللـه لا يسمى به غـيـره (خالق بلا حاجة) أى خلق العالـم وأحدثه من غـيـر أن يكون له احتياج إلـيه لـجلب منفعة أو دفع مضرة عن نفسه إنـما خلقه إظهارا لقدرته أى لـيكون علامة على عظيم قدرته فينتفع من عرفه وعرف أنه تام القدرة لا يعجزه شىء (رازق بلا مؤنـة) أى أنه تعالـى يوصل الأرزاق إلـى عباده من غـيـر أن تلحقه مشقة أو تعب لأن اللـه عز وجل يـخلق الأشياء بلا جارحة ولا ءالة ولا حركة ولا مـماسة لشىء (مـميت بلا مـخافة) أى يـميت الأحياء من عباده لا لـخوف من أن يلحقه ضرر أو أذى إن لـم يـمتهم إنـما يـميت من شاء منهم بـمقتضى حكمته وإظهارا لكمال قدرته (باعث بلا مشقة) أى يبعث الأموات يوم القيامة من غـيـر أن تلحقه مشقة.", "(ما زال بصفاته قديـما) أى أن اللـه تعالـى أزلـى لا بداية لوجوده أى موجود فـى الأزل بصفاته القديـمة (قبل خلقه) للعباد لأنه لو كان يـحدث فـى ذاته صفة لـم تكن فـى الأزل لوجب أن يكون ذاته حادثا أى مـخلوقا (لـم يزدد بكونـهم شيئا لـم يكن قبلهم من صفته) أى لـم يزدد بوجود الـخلق شـيئا من صفته بل صفاته أزلـية أبديـة لا تزيد ولا تنقص(وكما كان بصفاته أزلـيا كذلك لا يزال عليها أبديـا) أى أن اللـه تعالـى أزلـى أبدى ذاتا وصفات (ليس بعد خلق الـخلق استفاد اسم الـخالق ولا بإحداثه الـبـريـة استفاد اسم البارئ) أى لـم يـحدث للـه تعالـى صفة بإحداثه الـبـريـة أى الـخلق فاللـه تبارك وتعالـى خالق قبل حدوث الـخلق وبارئ قبل حدوث البريـة(له معنـى الربوبية ولا مربوب ومعـنـى الـخالق ولا مـخلوق) أى أنه تعالـى كان متصفا بالـخالقية والربوبية قبل وجود المخلوقيـن والمربوبيـن لـم تـحدث له صفة الربوبيـة بوجود المربوبيـن ولا الـخالقية بوجود المخلوقيـن (وكما أنه مـحيـى الموتى بعدما أحيا استحق هذا الاسم قبل إحيائهم) أى أنه تعالـى كان متصفا بالإحياء قبل حدوث الـخلق وحدوث الـحياة فـى الموتى لا يقتضى حدوث كـونه مـحييا لـهم و(كذلك استحق اسم الـخالق قبل إنشائهم) أى أنه مستحق للاتصاف بكونه خالقا قبل إنشاء الـخلق والمراد بالإنشاء هنا أثره أى ما يـحدث بإنشاء اللـه لأن الإنشاء إذا أريد به صفة اللـه فهو من الصفات الأزلـية وفـى قوله (ذلك) إشارة إلـى ما تقدم من الصفات كالإحياء والإماتة والـتخليق (بأنه على كل شىء قدير وكل شىء إلـيه فقيـر وكل أمر عليه يسيـر لا يـحتاج إلـى شىء) يعنـى أن قدرة اللـه مؤثرة فـى كل شىء أى فـى كل ما يقبل الدخول فـى الوجود وكل ما هو كذلك فهو فقيـر إلـى اللـه أى مـحتاج إلـيه فـى أصل وجوده وبقائه لا يلحقه فـى إيـجاده مشقة ولا يـحتاج فـى ذلك إلـى غـيـره (ليس كمثله شىء) والمراد بنفى المماثلة عن اللـه نفى المماثلة من جـميع الوجوه والمماثلة من بعض الوجوه (وهو السميع الـبصيـر) أى أن اللـه موصوف بالسمع والـبصر فهو تبارك وتعالـى يسمع كل المسموعات من غـيـر حاجة إلـى أذن أو ءالة أخرى ويرى كل المرئيات من غـيـر حاجة إلـى حدقة أو شعاع ضوء (خلق الـخلق بعلمه) أى على حسب علمه الأزلـى لأن الـخالق لا بد أن يكون عالما بـمخلوقه حتـى يوجده على حسب ما أراد (وقدر لـهم أقدارا) أى قدر فـى الأزل مقادير الـخلق من الـخيـر والشر والطاعة والمعصية والرزق والسعادة والشقاوة ونـحو ذلك وكتب فـى اللوح المحفوظ ما قدر حصوله إلـى يوم القيامة (وضرب لـهم ءاجالا) أى قدر ءاجال الـخلائق من البشر والـجن وغـيـرهم فلا يستأخرون ساعة ولا يستقدمون والأجل عبارة عن وقت يـخلق اللـه فيه الموت (ولـم يـخف عليه شىء) من أفعال العباد (قبل أن يـخلقهم وعلم) بعلمه الأزلـى (ما هم عاملون) بعد خلقهم (قبل أن يـخلقهم وأمرهم بطاعته ونـهاهم عن معصيته) أى أمر عباده بالطاعة ونـهاهم عن المعصية امتحانـا واختبارا ليظهر للعباد المطيع من العاصى على حسب ما سبق فـى علم اللـه الأزلـى (وكل شىء يـجرى بتقديره ومشيئته) أى كل ما دخل فـى الوجود إنـما وجد بتقدير اللـه الأزلـى ومشيئته الأزلـية سواء فـى ذلك الـخيـر والشر والطاعة والمعصية والكفر والإيـمان (ومشيئته تنفذ لا مشيئة للعباد إلا ما شاء لـهم) أى أن العباد لا يـحصل منهم مشيئة إلا أن يشاء اللـه فـى الأزل ذلك (فما شاء لـهم كان) أى ما شاء اللـه لـهم أن يفعلوه حصل منهم (وما لـم يشا لـم يكن) أى ما لـم يشإ اللـه فـى الأزل حصوله منهم لا يـحصل ويدل على ذلك قوله تعالى ﴿وما تشاءون إلا أن يشاء اللـه رب العالميـن﴾ (يهدى من يشاء ويعصم ويعافـى فضلا) أى يهدى من يشاء من عباده إلـى طاعته ويـحفظه عن معاصيه ويعافيه فـى نفسه ودينه فضلا منه (ويضل من يشاء ويـخذل ويبتلـى عدلا) أى يـخلق الضلالة فـى قلب من شاء من عباده ويتـرك حفظه ونصرته ويبتليه فـى نفسه ودينه عدلا منه لا ظلما (وكلهم يتقلبون فـى مشيئته بيـن فضله وعدله) أى كل الـخلائق يتقلـبون فـى مشيئة اللـه تعالـى بيـن فضله إن هداهم وبيـن عدله إن أضلهم (وهو متعال عن الأضداد والأنداد) أى منزه عن أن يكون له من خلقه من يتصرف على خلاف إرادته كما أنه منزه عن أن يكون له أمثال (لا راد لقضائه) أى لا يرد قضاء اللـه راد لأن فـى رد قضائه إثبات عجزه والعجز على اللـه مـحال والمراد بالقضاء الـتكوين (ولا معقب لـحكمه) أى لا يستطيع أحد أن يـمنع نفاذ إرادة اللـه عز وجل ووجود ما شاء اللـه وجوده (ولا غالب لأمره)أى لا أحد يـمنع نفاذ مشيئته فهو تعالـى يفعل ما يشاء (ءامنا بذلك كله وأيقـنا أن كلا من عنده) أى صدقنا تصديقا جازما وأيقـنا إيقانـا لا تردد فيه أن كل ما دخل فـى الوجود من خيـر وشر حصل بقضاء اللـه وإرادته."]}, {"id": "prophethood", "title": "نبوة سيدنا محمد ﷺ", "description": "إثبات نبوة سيدنا محمد ﷺ وختم النبوة وعموم الرسالة.", "icon": "fa-mosque", "paragraphs": ["وبعد أن فرغ المؤلف رحـمه اللـه من إثبات وحدانية اللـه وصفاته شرع فـى إثبات نبوة سيدنـا مـحمدﷺفقال (وإن مـحمداﷺعبده المصطفى ونبيه المجتبـى ورسوله المرتضى) والمصطـفى والمجتبـى معناهـما واحد وهو المختار وكذلك المرتضى لكن المصطـفى والمجتبـى فيهما زيادة مدح على المرتضى. ونبينا مـحمدﷺنبـى رسول أوحى إليه بشرع جديد وأمر بتبليغه. وقوله رحمه الله (وإنه خاتـم الأنبياء) أى ءاخرهم(وإمام الأتـقياء) أى مقدمهم فـى الآخرة (وسيد المرسليـن) أى أفضلهم (وحبيب رب العالميـن) أى مـحبوبه (وكل دعوى نبوة بعد نبوته) ﷺ (فغى وهوى) أى أن من ادعى الـنبوة بعد نبيـنا مـحمد ﷺ فدعواه باطلةلقوله عليه الصلاة والسلاملا نبـى بعدى رواه الـبخارى والـحاكم فـى المستدرك وهو حديث ثـابت. والغى هو الضلال والـخيبة وأما الـهوى فهو شهوة الـنفس وميلها إلـى الـباطل(وهو المبعوث إلـى عامة الـجن وكافة الورى)أى أنهﷺمرسل إلـى كافة الإنس والـجن(بالـحق والـهدى) أى لـبيان طريق الـحق والدعوة إلـيه (وبالـنور والضـياء) والمراد بالـنور القرءان لأنه يهتدى به."]}, {"id": "quran", "title": "القرءان كلام الله", "description": "بيان معنى كون القرءان كلام الله وما يتعلق بذلك من الاعتقاد.", "icon": "fa-book-quran", "paragraphs": ["وقولهرحمه الله(وإن القرءان كلام اللـه)معطوف على قوله إن اللـه واحد والـتقدير نقول فـى توحيد اللـه معتـقدين بتوفيق اللـه إن اللـه واحد وإن مـحمدا عبده المصطـفى وإن القرءان كلام اللـه (منه بـدا) أى ظهر بإنزاله على نبيه ﷺوليس المراد أنه خرج منه تلـفظا كما يـخرج كلام أحدنـا من لسانه تلـفظا بعد أن كان ساكتا بدليل قوله(بلا كـيفيـة قولا)أى ليس بـحرف ولا صوت ولا لغة.وقوله منه بـدا يوهم أن كلام اللـه حادث لكن الطحاوىنفى بقوله بلا كـيفيـة قولا أن يكون كلام اللـه الذاتـى حادثا أى بـحرف وصوت ولغة لأن الـحرف والصوت واللغة كـيفية (وأنزله على رسوله وحيا) أى أنزله جبـريل عليه السلام بأمر اللـه على سيدنـا مـحمد ﷺ قراءة عليه لا مكتوبـا فـى صحف.وقوله وإن القرءان يراد به كلام اللـه الذى هو صفتهوأما الـهاء فـى قوله وأنزله فضميـر يرجع على القرءان بـمعنى اللـفظ المنزل لأن القرءان له إطلاقان أى له معـنيان يطـلق على الكلام الذاتـى الذى هو صفة اللـه ويطـلق على اللـفظ المنزل وكلاهـما يقال له كلام اللـه. اللـفظ المنزل الذى أخذه جبـريل عليه السلام من اللوح المحفوظ ونزل به على نبيـنا مـحمد ﷺ يقال له كلام اللـه لأنه عبارة عن كلام اللـه الذاتـى ولأنه ليس من تـأليف ملك ولا تصنيف بشر. والوحى إما أن يكون بواسطة الملك أو بالإفاضة على قلب الـنبـى أو بسماع كلام اللـه الأزلـى.", "وقوله رحمه الله (وصدقه المؤمنون على ذلك حقا وأيقنوا أنه كلام اللـه بالـحقيقة ليس بـمخلوق ككلام البـريـة) أى أن القرءان يطلق عليه كلام اللـه حقيقة لا مـجازا وفـى ذلك رد على المعتزلة القائليـن بأن القرءان سـمى كلام اللـه بطريق المجاز لأنه خالقهفهملا يعتقدون أن للـه كلاما ذاتـيا أزلـيا ليس حرفا ولا صوتـا ولا لغة لا يبتدأ ولا يـختتم (فمن سـمعه فزعم أنه كلام الـبشر فقد كفر) أى من سـمع القرءان فزعم أنه من تأليف بشر فقد كفر (وقد ذمه اللـه وعابه وأوعده بسقر) أى توعده بالعذاب الشديد فـى نـار جهنم (حيث قال تعالـى﴿سأصليه سقر﴾) أى سأدخله جهنم (فلما أوعد اللـه بسقر لمن قال﴿إن هذا إلا قول الـبشر﴾)أى لما توعد اللـه من قال إن القرءان هو من تـأليف بشر بالعذاب فـى جهنم (علمنا وأيقنا أنه قول خالق البشر ولا يشبه قول الـبشر) فهو وحى من اللـه لا يستطيع إنسان أن يـأتـى بـمثله."]}, {"id": "tanzih-human", "title": "تنزيه الله عن صفات البشر", "description": "بيان تنزيه الله تعالى عن أوصاف البشر والمماثلة للمخلوقات.", "icon": "fa-shield-halved", "paragraphs": ["(ومن وصف اللـه بـمعـنـى من معانـى البشر فقد كفر) أى من وصف اللـه بوصف من أوصاف الـبشر فقد كفر لإثباته المماثلة بيـن اللـه وبيـن خلقه وهى منـفية عن اللـه بقوله تعالـى﴿ليس كمثله شىء﴾فلو كان اللـه متصفا بصفة من صفات الـبشر لـجاز عليه ما يـجوز على الـبشر من حدوث وفناء وتغـيـر وغـيـر ذلك ومن جاز عليه ذلك فلا يصلح أن يكون مكونـا للحادثـات أى المخلوقات. وصفات الـبشر كثيـرة وبعضها صفات لغـيـر الـبشر من ذوى الأرواح وبعضها تشتـرك فيها الـجمادات، ومن صفات الـبشر الـجهل والعجز والـتغـيـر والانفعال والـجلوس والقعود والاستقرار والصورة والشكل والـهيئة والـحد والكون فـى مكان كل هذا لا يـجوز على اللـه تبارك وتعالـى (فمن أبصر هذا) بقلبه (اعتبـر وعن مثل قول الكفار انزجر) أى اعتبـر بالكفار القائليـن بالمماثلة المستحقيـن لسقر لـيكف عن مثل ذلك لـئلا يلزمه ما لزمهم من العذاب (وعلم أنه بصفاته ليس كالـبشر) لأن صفاته تعالـى قديـمة لا بداية لـها وصفات الـبشر مـحدثة أى مـخلوقة."]}, {"id": "vision", "title": "رؤية الله في الآخرة", "description": "شرح إثبات الرؤية لأهل الجنة وما يتعلق بالتسليم والتأويل.", "icon": "fa-eye", "paragraphs": ["(والرؤيـة حق لأهل الـجنة بغـيـر إحاطة ولا كـيفية) أى أن رؤية اللـه فـى الآخرة حق يـجب الإيـمان بـها يراه المؤمنون وهم فـى الـجنـة من غـيـر مشابـهة لشىء من خلقه يرون اللـه من غير أن يكون فـى مقابلة منهم أو جهة أو مكان ومن غـيـر أن يـحيطوا معرفة بذاته سبحانه (كما نطق به كتاب ربنا﴿وجوه يومئذ نـاضرة إلـى ربـها ناظرة﴾) أى ترى ربـها ذلك اليوم (وتفسيـره على) حسب (ما أراده اللـه تعالـى وعلمه.وكل ما جاء فـى ذلك) أى فـى رؤيـة المؤمنيـن لربـهم فـى الآخرة (من الـحديث الصحيح) الثابت (عن الرسول ﷺ فهو كما قال ومعناه على) حسب (ما أراد) كحديث مسلم إنـكم ستـرون ربكم يوم القيامة كما ترون القمر لـيلة الـبدر لا تضامون فـى رؤيته. شبه الرسول ﷺ رؤية المؤمنيـن لربـهم من حيث عدم الشك برؤية القمر ليلة الـبدر ولـم يشبه اللـه بالقمر أى أنـهم يرونه رؤية لا شك فيها لا يشكون هل الذى رأوه هو اللـه أم غـيـره كما أن مبصر القمر ليلة الـبدر إذا لـم يكن سحاب يراه رؤية لا شك فيها. لا تضامون فـى رؤيته أى لا تتزاحـمون فـى رؤيته تعالى وهذا شأن من لا مكان له لأن الناس إذا أرادوا رؤية من فـى مكان يتزاحـمون ويتدافعون لـيـروه فيـراه الأقربون منه ولا يراه الأبعدون فيتدافعون.", "و(لا ندخل فـى ذلك متأوليـن بآرائنا ولا متوهـميـن بأهوائنا) أى لا ندخل فـى تـأويل الآيات والأحاديث الواردة فـى رؤية اللـه فـى الآخرة بـمجرد الرأى بلا دليل عقلـى قاطع أو دليل نقلـى ثابت أو اتـباعا للوهم والـتصور فلا ننفى الرؤية كما فعل المعتزلة ولا نـجعل الرؤية بكـيفية كما فعل الوهابية المشبـهة (فإنه ما سلم فـى دينه إلا من سلم للـه عز وجل ولرسوله ﷺ) أى اعتقد أن ما جاء فـى الشرع من أمور الدين فهو على حسب ما أراد اللـه ورسوله (ورد علم ما اشتبه عليه إلـى عالمه) أى من اشتبه عليه فهم شىء من الأمور المتعلـقة بالآخرة وغـيـرها يرجع به إلـى أهل العلم الراسخيـن وهم العلماء المتمكـنون فـى العلم كابن عباس رضى اللـه عنهما (ولا تثبت قدم فـى الإسلام إلا على ظهر الـتسليم والاستسلام) والتسليم هو الرضى بـما جاء عن اللـه عز وجل وأما الاستسلام فهو الانقياد لأوامر اللـه تعالى ونواهيه والمعـنـى أنه لا يصح الـثبات على الإسلام إلا لمن سلم للـه تعالـى ولـم يعـتـرض عليه ولـم يصفه بـما لا يليق به وقبل ما جاء فـى الشرع من العـقائد والأحكام.", "(فمن رام علم ما حظر عنه علمه) أى من طلب علم ما نـهانـا اللـه عنه كالـخوض فـى القدر للوصول إلـى سره (ولـم يقنع بالـتسليم فهمه) أى ولـم يقنع بالـتسليم وتفويض العلم إلـى اللـه (حجبه مرامه) أى منعه مطلوبه (عن خالص الـتوحيد وصافـى المعرفة) أى صفاء المعرفة باللـه (وصحيح الإيـمان فيتذبذب بــيـن الكفر والإيـمان والـتصديق والـتكذيب والإقرار والإنكار) أى فيكون مضطربـا مؤمنا ببعض وكافرا ببعض و(موسوسا) أى تعـتـريه الوساوس (تائها) عن طريق الـحق (شاكا) زائغا أى مائلا عن الـحق إلـى الباطل (لا مؤمنا مصدقا) بالكل كالمؤمن حقيقة (ولا جاحدا مكذبا) بالكل كالكافر المعلن كفره.", "(ولا يصح الإيـمان بالرؤية لأهل دار السلام) أى لأهل الـجنة المؤمنيـن (لمن اعتبـرها منهم بوهم) وهم المشبهة الوهابية (أو تـأولـها بفهم) كالمعتزلة الذين تـأولوا الرؤية بفهمهم أى بـمجرد الرأى بلا دليل فقالوا إنه يلزم القول بالرؤية تشبيهه بالـخلق لأن الذى يرى لا بد أن يكون فـى جهة فأنـكروا الرؤيـة وفسروا قول اللـه تعالـى﴿إلى ربـها ناظرة﴾بانتظار الـنعمة وقولـهم هذا مردود وضلال وأما حديث مسلم إنـكم ستـرون ربكم يوم القيامة كما ترون القمر لـيلة البدر لا تضامون فـى رؤيته فيزعمون أنه غـيـر ثـابت. وأما المشبهة الوهابية فإنـهم قالوا إنه يرى كما يرى المخلوق فـى جهة ومسافة ومقابلة وهذا ليس إيـمانـا برؤية اللـه فالـحديث إنـكم ستـرون ربكم يوم القيامة كما ترون القمر لـيلة البدر معناه عندهم ترونه مواجهة كما ترون القمر مواجهة وهذا ضلال وكفر مبين.", "(إذ كان تـأويل الرؤية وتـأويل كل معـنـى يضاف إلـى الربوبية بتـرك الـتأويل ولزوم الـتسليم وعليه دين المسلميـن) ولا يريد الطحاوى رحـمه اللـه بتـرك الـتأويل الـتأويل الإجـمالـى لأهل السنة إنـما الـتأويل الـبعيد عن الـحق والإصابـة لأن من نفى الـتأويل الإجـمالـى وقع فـى الـتشبيه لا مـحالة والـتأويل الإجـمالـى هو اعتقاد أن تلك الظواهر للمتشابـهات من الآيات والأحاديث الواردة فـى الصفات الموهـمة للجسمية وصفات الـجسمية كالـحركة والسكون المراد بـها غـيـر هذه المعانـى التـى تتبادر إلـى الذهن. (ومن لـم يتوق الـنفى والـتشبيه زل ولـم يصب الـتنزيه) أى أن المعطل الذى نفى ما أثبته اللـه تعالـى زل أى حاد عن الـحق وأن الذى أثبت لـفظا ولـم ينزه معـنـى بل شبه اللـه بـخلقه لـم يصب الـتنزيه أى لـم ينزه اللـه تعالـى عما يـجب تنزيهه عنه (فإن ربنا جل وعلا موصوف بصفات الوحدانية) أى موصوف بالصفات التـى تنفى عن اللـه تعالـى المشابـهة لغـيـره وفـى هذا رد على المعطـلة كالمعتزلة والفلاسفة الذين نفوا الصفات عن اللـه (منعوت بنعوت الفردانية) وهو تأكيد لقوله موصوف بصفات الوحدانية فإن الـنعت والصفة بـمعنـى واحد وكذا الوحدانية والفردانية (ليس فـى معناه أحد من البـريـة) أى لا يصح عقلا ولا شرعا أن يتصف المخلوق بشىء من صفات اللـه عز وجل."]}, {"id": "tanzih-limits", "title": "تنزيه الله عن الحدود والجهات", "description": "بيان التنزيه عن الحدود والغايات والأعضاء والأركان والأدوات والجهات.", "icon": "fa-compass", "paragraphs": ["(و)قوله (تعالـى) أى تنزه (عن الـحدود والغايات والأعضاء والأركان والأدوات) والـحد معناه نـهاية الشىء فيجب اعتقاد أن اللـه ليس بـمحدود لأن الشىء الذى له حد أى حجم يـحتاج إلـى من جعله على ذلك الـحد أى الحجم الذى هو عليه ونفى الـحد عن اللـه عبارة عن نفى الـحجم وليس معنـى نفى الـحد عن اللـه أنه شىء مـمتد إلـى غـيـر نـهاية. من ظن أن اللـه له امتداد لا نـهائـى كافر وكذلك الذى يعـتـقد أن اللـه له امتداد ينتهى صغيـر أو كبيـر. وقوله والغايات جـمع غايـة والغايـة ما ينتهى إليه الشىء أما الأركان فهى الـجوانب وأما الأعضاء فهى الأجزاء الكبيـرة من الـبدن كالـيد والرجل والرأس فاللـه تعالـى منزه عن أن يكون مركبا من أعضاء كالإنسان وغـيـره من ذوى الأرواح أما الأدوات فهى الأجزاء الصغيـرة كاللسان والأضراس واللهاة والأذن والإصبع فاللـه تعالـى لا يـجوز أن يتصف بالأعضاء صغيـرة كانت أو كبيـرة. وفسر بعضهم الأدوات بالآلات التـى يستعيـن بـها الإنسان فـى عمله كآلات الـبناء وءالات الـنجار أما اللـه تعالـى فيخلق ما يشاء بقدرته الأزلـية من غـيـر حاجة إلـى استعمال ءالات (لا تـحويه الـجهات الست) أى لا تـحيط به الـجهات الست (كسائر المبتدعات) أى المخلوقات إذ المخلوقات لا تـخلو عن الـتحيز فـى إحدى الـجهات الست لأن الـحادث أى المخلوق لا بد أن يكون بـمكان والـجهات الست هى فوق وتـحت ويـميـن وشـمال وأمام وخلف."]}, {"id": "miraj", "title": "الإسراء والمعراج", "description": "بيان الإسراء والمعراج وما ورد في النص من تفاصيله.", "icon": "fa-route", "paragraphs": ["(والمعراج حق) يـجب الإيـمان به وهو الصعود إلـى السمــٰـوات السبع وإلـى ما فوقها (وقد أسرى بالـنبـى ﷺ) أى ذهب به لـيلا من المسجد الـحرام فـى مكة إلـى المسجد الأقصى فـى فلسطيـن قال تعالـى ﴿سبحان الذى أسرى بعبده لـيلا من المسجد الـحرام إلـى المسجد الأقصى الذى باركنا حوله لـنريه من ءاياتنا﴾ (وعرج بشخصه) ﷺ أى بروحه وجسده (فـى الـيقظة إلـى السماء ثـم إلـى حيث شاء اللـه من العلى) بواسطة المرقاة وهى شبه السلم (وأكرمه اللـه بـما شاء)بإطلاعه على عجائب العالـم العلوى ورؤيته لربه بفؤاده من غـيـر أن يكون اللـه فـى مكان(وأوحى إليه ما أوحى) ومن جـملة ما أوحى اللـه إلـيه فرضيـة الصلوات الـخمس واستدل أهل الـحق على أن الـنبـى ﷺ رأى ربه تلك الليلة بقلبه لا بعينه بقوله تعالـى (﴿ما كذب الفؤاد ما رأى﴾ فصلى اللـه عليه وسلم فـى الآخرة والأولـى)."]}, {"id": "hawd", "title": "الحوض", "description": "بيان الحوض الذي أكرم الله به النبي ﷺ يوم القيامة.", "icon": "fa-droplet", "paragraphs": ["(والـحوض الذى أكرمه اللـه تعالـى به غياثا لأمته حق) يـجب الإيـمان به طوله مسيـرة شهر وعرضه كذلك يشرب منه المؤمنون يوم القيامة قبل دخول الـجنة فلا يصيبهم بعد ذلك ظمأ فمنهم من يشرب عطشا وهم العصاة ومنهم من يشرب تلذذا وهم الأتـقياء. قال رسول اللـه ﷺ حوضى مسيـرة شهر ماؤه أبيض من اللبن وريـحه أطيب من المسك وكيزانه كنجوم السماء (أى أكوابه كـعدد نـجوم السماء) من شرب منه لا يظمأ أبدا رواه الـبخارى."]}, {"id": "shafaa", "title": "الشفاعة", "description": "شرح الشفاعة التي ادخرها النبي ﷺ لأمته.", "icon": "fa-hands-praying", "paragraphs": ["(والشفاعة التـى ادخرها) الـنبـى ﷺ (لـهم) أى لأهل الكـبائر من أمته (حق كما روى فـى الأخبار) كحديث الـتـرمذى شفاعتـى لأهل الكـبائر من أمتـى. ومعنـى الشفاعة أن الرسول يطلب من ربه يوم القيامة إنقاذ خلق كـثيـر من أمته من الـنار بإخراج قسم منهم منها بعد أن دخلوها وبعدم دخولـها لـبعض ءاخرين. أما الأتقياء والذين ماتوا تائبيـن فلا يـحتاجون للشفاعة. وأما الكـفار فلا شفاعة لـهم يوم القيامة لقوله تعالـى ﴿ولا يشفعون إلا لمن ارتضى﴾ أى إلا لمن ارتضى الإسلام دينا أى لا يشفعون إلا لمن مات على الإيـمان."]}, {"id": "mithaq", "title": "الميثاق", "description": "بيان الميثاق الذي أخذه الله تعالى من آدم وذريته.", "icon": "fa-scroll", "paragraphs": ["(والميثاق) أى العهد (الذى أخذه اللـه تعالـى من ءادم وذريته حق) أى أن الميثاق الذى أخذه اللـه على ءادم وسائر الأنبياء أن يبلغوا الرسالة ويقيموا الدين أما الميثاق الذى أخذ من ذريـة ءادم فهو اعـتـرافهم بعد أن أخرجت أرواحهم من ظهر ءادم فـى نعمان الأراك فـى عرفات بأن اللـه خالقها ومالكها. صورهم اللـه تعالـى بصور بنـى ءادم وبـحجم الـنمل الصغيـر وخلق فيهم المعرفة بأنه لا إلــٰه لـهم إلا اللـه ثـم استنطقهم أى جاء إلـيهم ملك بأمر اللـه وقال لـهم إن ربكم يقول ألست بربكم قالوا بلى. جـميع أرواح ذريـة ءادم اعتـرفوا ذلك الـيوم."]}, {"id": "qadar", "title": "القدر", "description": "شرح القدر والعلم الأزلي والتحذير من الخوض في سره.", "icon": "fa-scale-balanced", "paragraphs": ["(وقد علم اللـه تعالـى فيما لـم يزل) أى علم بعلمه الأزلـى (عدد من يدخل الـجنة) أنـهم يؤمنون ويطيعون عن اختيار منهم (و)علم (عدد من يدخل الـنار) أنـهم يكفرون ويـخالفون أوامره عن اختيار منهم لا عن جبـر (جـملة واحدة فلا يزاد فـى ذلك العدد ولا ينقص منه وكذلك أفعالـهم فيما علم منهم أن يفعلوه) لأنه يستحيل أن لا يعلم سبحانه ما يكون من مـخلوقاته (وكل ميسر لما خلق له) أى مسهل له العمل الذى اختاره فمن قدر أنه من أهل الـجنة قدر له ما يقربه إلـيها من قول وعمل ووفق لذلك ومن قدر أنه من أهل الـنار قدر له خلاف ذلك فأتى بأعمال أهل الـنار وأصر عليها (والأعمال بالـخواتيم) أى أن العمل الذى يـجازى به العبد يوم القيامة فيظهر أنه سعيد أو شقى هو ما يـختم له به من الأعمال (والسعيد من سعد بقضاء اللـه تعالـى والشقى من شقـى بقضاء اللـه تعالـى) أى أنه لا يكون العبد سعيدا أو شقيا إلا على حسب ما سبق فـى علم اللـه فمن علم اللـه فـى الأزل أنه يـموت على الإيـمان فإنه يـموت على الإيـمان ولو سبق له كفر ومن علم اللـه أنه يـموت على الكـفر فإنه يـموت على الكفر ولو سبق له إيـمان وطاعة.", "(وأصل القدر) أى حقيقة القدر (سر اللـه تعالـى فـى خلقه لـم يطلع على ذلك ملك مقرب ولا نبـى مرسل) لذلك نـهينا عن الـخوض فيه لقوله ﷺ إذا ذكر القدر فأمسكوا رواه الطبـرانـى وروى الشافعـى والـحافظ ابن عساكـر عن سيدنـا علـى رضى اللـه عنه أنه قال للسائل عن القدر سر اللـه فلا تتكلف أى لا تتكلف مـحاولة الوصول إلـى معرفة حقيقته. فعلم القدر مكـتوم عن الـخلائق لأن اللـه منفرد بالإحاطة بالغيب علما لقوله تعالـى ﴿عالـم الغيب فلا يظهر على غـيبه أحدا﴾ معناه أن اللـه تعالـى لا يطلع على جـميع غـيبه أحدا من الـخلق إنـما يطلع على بعض الغيب من شاء من عباده من أنبياء وملائكة وأولياء. والغـيب هو ما غاب عن حس الـخلق فما غاب عن حس الـخلق لا يعلم جـميعه إلا اللـه تبارك وتعالـى. أما معرفة معـنـى القدر والإيـمان به فهو واجب وليس هذا من الـخوض الذى نـهى الـنبـى ﷺ عنه. والقدر هو إيـجاد اللـه الأشياء على حسب علمه ومشيئته الأزلـييـن ويقال بعبارة أخرى القدر هو جعل كل شىء على ما هو عليه قال رسول اللـه ﷺ فيما رواه مسلم وتؤمن بالقدر خيـره وشره معناه أن تعـتـقد أن المخلوقات كلها وفيها الـخيـر والشر وجدت بتقدير اللـه الأزلـى.", "وقوله رحمه الله (والـتعمق والـنظر فـى ذلك ذريعة الـخذلان وسلم الـحرمان ودرجة الطغـيان) أى أن الـخوض فـى القدر للوصول إلـى معرفة سره يؤدى إلـى الـخذلان ويوصل إلـى الـحرمان والطغـيان. والـخذلان هو الـحرمان من الـهداية وأما الطغيان فهو مـجاوزة الـحد. ثـم زاد المؤلف رحـمه اللـه فـى الـتحذير فقال (فالـحذر كل الـحذر من ذلك نظرا وفكرا ووسوسة) لأن اللـه تعالـى لـم يـجعل للخلق سبيلا إلـى معرفة حقيقة القدر أى الـتقدير كما روى الطبـرانـى عن سيدنـا علـى رضى اللـه عنه أنه سئل عن القدر فقال سر اللـه فلا تتكلف فلما ألـح السائل قال أما إذ أبيت فإنه أمر بيـن أمرين لا جبـر ولا تفويض أى لـيس العبد مـجبـرا على أفعاله بلا اختيار منه وليس الأمر مفوضا إليه بـحيث تـخرج مشيئته عن مشيئة اللـه وإنـما العبد مـختار تـحت مشيئة اللـه قال تعالـى ﴿وما تشاءون إلا أن يشاء اللـه رب العالميـن﴾ (فإن اللـه تعالـى طوى علم القدر عن أنامه ونـهاهم عن مرامه) أى نـهاهم عن طـلبه لأنه أمر لا سبيل إلـى معرفته (كما قال تعالـى فـى كتابه ﴿لا يسأل عما يفعل وهم يسألون﴾ فمن سأل لـم فعل فقد رد حكم الكـتاب ومن رد حكم الكـتاب كان من الكافرين) أى أن من قال لـم فعل اللـه كذا اعـتـراضا على اللـه فقد رد قول اللـه تعالـى ﴿لا يسأل عما يفعل وهم يسألون﴾.", "(فهذه جـملة ما يـحتاج إلـيه من هو منور قلبه من أولـياء اللـه تعالـى) وفـى هذا إشارة إلـى جـميع ما تقدم مـما يـجب اعتقاده والعمل به فمن وفقه اللـه لذلك فقد نور اللـه قلبه وانتظم فـى سلك الأولـياء (وهى درجة الراسخيـن فـى العلم) أى درجة المتمكنيـن فـى العلم وهم الذين ثبتوا فيه وتـمكـنوا (لأن العلم علمان علم فـى الـخلق موجود) وهو ما جعل اللـه للعباد سبيلا إلـيه كعلم العقائد والأحكام وعلم ما ينتفع به فـى المعيشة (وعلم فـى الـخلق مفقود) وهو ما اختص اللـه به ولـم يـجعل للخلق سبيلا إلـيه فدعواه كفر كالذى يدعى علم وجبة القيامة أى وقت وقوعها على الـتحديد. (فإنكار العلم الموجود كفر) كإنـكار السوفسطائية وجود الأشياء وإنـكار أحـمد بن تـيمية الفيلسوف الضال المجسم حدوث العالـم (وادعاء العلم المفقود كفر) كادعاء العلم بالغـيب والعلم بـحقيقة القدر وقـيام الساعة (ولا يثبت الإيـمان إلا بقبول العلم الموجود وترك طلب العلم المفقود)."]}, {"id": "lawh-qalam", "title": "اللوح والقلم", "description": "الإيمان باللوح والقلم وما كُتب إلى يوم القيامة.", "icon": "fa-pen-nib", "paragraphs": ["وقوله رحمه الله (ونؤمن باللوح والقلم) أى يـجب على المكلفيـن الإيـمان باللوح والقلم. واللوح خلق بعد الماء والعرش والقلم وهو تـحت العرش وقيل فوقهطوله ما بـيـن السماء والأرض وعرضه ما بيـن المشرق والمغرب ومساحته مسيـرة خـمسمائة عام. أما القلم فهو القلم الأعلى خلق بعد الماء والعرش ثـم أمر بالكتابة على اللوح فجرى بقدرة اللـه تعالـى من غير أن يـمسكه أحد فكتب ما كان وما يكون إلـى يوم القـيامة. وقوله (وبـجميع ما فيه قد رقم) أى نؤمن بـجميع ما كتب فيه فالـكتب السماويـة مكتوبة فـى اللوح المحفوظ وكذا ما يكون إلـى يوم القيامة.", "(فلو اجتمع الـخلق كلهم على شىء كـتبه اللـه فيه أنه كائن لـيجعلوه غـيـر كائن لـم يقدروا عليه ولو اجتمعوا كلهم على شىء لـم يكـتبه اللـه تعالـى فيه لـيجعلوه كائنا لـم يقدروا علـيهجف القلم بـما هو كائن إلـى يوم القيامة) أى فرغ القلم من كتابة ذلك. وهذه الألفاظ التـى ذكرها المؤلف وردت فـى حديث رسول اللـهﷺ بالمعنـىكحديث الـبيهقى فـى شعب الإيـمان قد جف القلم بـما هو كائن فلو اجتمع الـخلق على أن ينفعوك بشىء لـم يكـتبه اللـه فـى أم الـكتاب لـم يستطيعوا ولو اجتمع الـخلق على أن يضروك بشىء لـم يكتبه اللـه فـى أم الكتاب لـم يستطيعوا (وما أخطأ العبد لـم يكن لـيصيبه) أى إن لـم يصبه فقد أراد اللـه أن لا يصيبه (وما أصابه لـم يكن لـيخطئه)أى ما قدر اللـه أن يصيبه من رزق أو مصيبة أو غـيـر ذلك لا بد أن يصيبه لأن علم اللـه سبق بذلك (وعلى العبد أن يعلم أن اللـه) تعالـى (قد سبق علمه فـى كل كائن من خلقه) أى يـجب على العبد أن يعلم أن ما سبق فـى علم اللـه أنه يكون فلا بد أن يكون (فقدر ذلك تقديرا مـحكما مبـرما) أى قدره تقديرا نافذا لا يتغيــر (ليس فيه نـاقض ولا معقب) أى ليس له مفسد يفسده ولا من يؤخره عن وقته (ولا مزيل ولا مغـيـر ولا مـحول ولا ناقص ولا زائد من خلقه فـى سـماواته وأرضه) أى إن كان ذلك فـى العالـم العلوى أو السفلـى فلا بد أن يـجرى على حسب ما سبق فـى علم اللـه الأزلـى (وذلك من عقد الإيـمان وأصول المعرفة والاعتـراف بتوحيد اللـه تعالـى وربوبيته) أى أن فـى هذا الاعتقاد إثبات الوحدانية والربوبية للـه عز وجل ونفى الـتدبيـر الشامل عما سوى اللـه ولا يتم الـتوحيد والاعتـراف بالربوبية إلا بالاعتـراف بصفات اللـه عز وجل (كما قال تعالـى فـى كـتابه ﴿وخلق كل شىء فقدره تقديرا﴾ وقال تعالـى ﴿وكان أمر اللـه قدرا مقدورا﴾) أى أن الـحادث شىء مقدر وجد بتقدير اللـه الأزلـى (فويل لمن صار للـه تعالـى فـى القدر خصيما) أى أن من أنـكر تقدير اللـه لأعمال العباد صار خصيما للـه واستحق الويل وهو العذاب الشديد وسـمى خصيما للـه لأنه يدعى مشاركة اللـه فـى الـتقدير (وأحضر للنظر فيه قلبا سقيما لقد التمس بوهـمه فـى فحص الغـيب سرا كتيما وعاد بـما قال فيه أفاكا أثيما) أى نظر فـى أمر القدر بقلب سقيم مرتـاب أو مكذب بـما ثبت بالأدلة القاطعة طالـبا للوقوف على سر القدر المكـتوم الذى لا يدركه علمه غـيـر مسلم للـه فصار بـهذا أفاكا أثيما والأفاك كثيـر الكذب والأثيم الفاجر كثيـر الإثـم."]}, {"id": "arsh-kursi", "title": "العرش والكرسي", "description": "بيان الإيمان بالعرش والكرسي وتنزيه الله عن المكان والجهة.", "icon": "fa-kaaba", "paragraphs": ["(والعرش والكرسى حق) أى يـجب الإيـمان بوجودهـما لأن اللـه تعالـى نص عليهما فـى القرءان أما العرش فهو سرير له أربع قوائمأعده اللـه ليطوف به الملائكة كما يطوف المؤمنون فـى الأرض بالكعبة وهوأعظم الأجسام حجما وأوسعها مساحة. وأما الكرسى فهوجرم أى جسم عظيم خلقه اللـه تـحت العرش أكـبـر منالسمــٰـواتالسبع لكنه أصغر من العرش بكثيـر.السمــٰـواتالسبع بالنسبة إلـى الكرسى كحلقة ملقاة فـى صحراء واسعةوالكرسى بالنسبة للعرش كحلقة ملقاة فـى صحراءواسعة(وهو مستغن عن العرش وما دونه) لقوله تعالـى ﴿إن اللـه لغنـى عن العالميـن﴾ وفـى ذلك رد على المجسمة الوهابية حيث وصفوه بالـجسم والـجلوس على العرش أما قوله تعالـى﴿الرحـمـٰن على العرش استوى﴾ فقدفسره بعض العلماء بالقهر لكن لا يقطع بأن مراد اللـه بالاستواء على العرش القهر إنـما يظن ظـنا راجحا وهذا مـما يليق باللـه لأنه وصف نفسه بأنه قهار فلا يـجوز أن يتـرك ما هو لائق باللـه إلـى ما هو غـيـر لائق به وهو الاستقرار والـجلوس والمحاذاة أى كـون الشىء فـى مقابل شىء. ومعنـى قهر اللـه للعرش الذى هو أكـبـر المخلوقات حجما أن العرش تـحت تصرف اللـه هو أوجده وحفظه وأبقاه. وهو تبارك وتعالـى (مـحيط بكل شىء) بالعلم والقهر والسلطان وليس كإحاطة الـحقة بـما فيها من الأشياء الثمينة (و)كما أنه متصف بأنه مـحيط بالعالـم كذلك هو متصف بأنه (فوقه) وفوقـيته هى فوقـية القدرة والقهر لا فوقـية المكان والـجهة قال اللـه تعالـى﴿وهو القاهر فوق عباده﴾(وقد أعجز عن الإحاطة خلقه) أى لا يـحيط أحد من الـخلق علما بكل شىء فإذا كان الملائكة لا يـحصيهم عددا إلا اللـه لقوله تعالـى﴿وما يعلم جنود ربك إلا هو﴾فكيف بـجميع الـخلق."]}, {"id": "ibrahim-musa", "title": "إبراهيم وموسى عليهما السلام", "description": "بيان الخلة لإبراهيم وتكليم موسى عليهما السلام.", "icon": "fa-landmark", "paragraphs": ["(ونقول إن اللـه اتـخذ إبراهيم خليلا) والـخليل هو الذى بلغ مقام الـخلة وهى الغاية فـى الانقطاع إلـى عبادة اللـه فإذا قيل إبراهيم خليل اللـه معناه له منزلة خاصة عند اللـه. ولـيست الـخلة كالولادة لأن الولادة توجب البعضية والـجزئية أما اتـخاذ الـخليل فلا يوجب شيئا من ذلك بل يوجب الكرامة والقرب أى القرب المعـنوى. وقوله رحمه الله (وكلم اللـه موسى تكليما إيـمانا وتصديقا وتسليما) إثبات لما جاء فـى القرءان وهو قوله تعالـى﴿وكلم اللـه موسى تكليما﴾أى أسـمعه كلامه الأزلـى الأبدى الذى ليس حرفا ولا صوتـا ولا لغة. وبـما أن الكلام صفة للـه حقيقة أكد اللـه الفعل بالمصدر وهو دليل على نفى المجاز فالمجاز لا يؤكد بالمصدر كقولـهم قال بيده إذا أشار بـها."]}, {"id": "angels", "title": "الملائكة", "description": "بيان الإيمان بالملائكة وصفاتهم كما ورد في النص.", "icon": "fa-feather", "paragraphs": ["(ونؤمن بالملائكة) أى يـجب الإيـمان بوجودهم وهم أجسام لطيفة لا تـجس بالـيد خلقهم اللـه من نور لـهم أرواح وعقول وإرادة. ليسوا ذكورا ولا إناثا لا يأكلون ولا يشربون ولا يبولون ولا يتغـوطون ولا ينامون ولا يتعبون ولا يتناكحون ولا يتوالدون وهم مسلمون مكلفون بالإيـمان وعباد للـه طائعون لا يعصون اللـه ما أمرهم ويفعلون ما يؤمرون."]}, {"id": "prophets", "title": "الأنبياء", "description": "بيان الإيمان بالأنبياء وصفاتهم وعصمتهم كما ورد في النص.", "icon": "fa-user-group", "paragraphs": ["وقوله رحمه الله (والـنبييـن) أى يـجب الإيـمان بالأنبياء وأن اللـه تعالـى أرسلهم للدعوة إلـى دين الإسلام أولـهم ءادم عليه السلام وءاخرهموأجملهم وأحسنهم وأعلمهم وأشجعهم مـحمد ﷺ. جـملهم اللـه بصفات حـميدة وأخلاق حسنة ونزههم عن الصفات الذميمة فهم جـميعا أهل الصدق والأمانة والعفة والفطانة والشجاعة والفصاحة حفظهم اللـه من الكفر والكبائر والصغائر التـى فيها خسة ودناءة قبل الـنبوة وبعدها فلا يكذبون ولا يغشون ولا يـخونون ولا يأكلون أموال الـناس بالـباطل وليس فيهم من هو رذيل يـختلس الـنظر إلـى الـنساء الأجنبيات بشهوة وليس فيهم من هو سفيه يتصرف بـخلاف الـحكمة أو يقول ألفاظا شنيعة تستقبحها الـنفس كمن يشتم يـمينا وشـمالا وليس فـى الأنبياء من هو جبان ضعيف القلب أو ضعيف الفهم عصمهم اللـه من سبق اللسان فـى أمور الدين وغـيـرها فلا يتكلمون بكلام لا يريدون قوله. ولا يـجوز فـى حقهم الـجنون والـخرف وتـأثيـر السحر فـى عقولـهم وتصرفاتـهم ولا تصيبهم الأمراض المنفرة كالـجرب والـبـرص والـجذام وخروج الدود من الـجسم ولا تـحصل فـى أبدانـهم ولا فـى أفواههم ولا فـى ثيابـهم الروائح الكريهة."]}, {"id": "books", "title": "الكتب المنزلة", "description": "بيان الإيمان بالكتب المنزلة على المرسلين.", "icon": "fa-book", "paragraphs": ["(و)أما (الكتب المنزلة على المرسليـن) كالقرءان والـتوراة الأصلية والإنـجيل الأصلـى والزبور فيجب الإيـمان بـها أى بأنـها من عند اللـه ليست من تأليف بشر ولا من تصنيف ملك وهى مائة وأربعة فقد روى ابن حبان فـى صحيحه من حديث أبـى ذر أنه قال قلت يا رسول اللـه كم كتابا أنزل اللـه قال مائة كتاب وأربعة كتب أنزل على شيث خـمسون صحيفة وأنزل على أخنوخ (أى إدريس) ثلاثون صحيفة وأنزل على إبراهيم عشر صحائف وأنزل على موسى قبل الـتوراة عشر صحائف وأنزل الـتوراة والإنـجيل والزبور والقرءان."]}, {"id": "prophets-truth", "title": "شهادة الحق للأنبياء", "description": "الشهادة بأن الأنبياء كانوا على الحق المبين.", "icon": "fa-circle-check", "paragraphs": ["وقوله رحمه الله (ونشهد أنـهم) أى الأنبياء (كانوا على الـحق المبيـن) معناه نعلم ونعتقد فـى قلوبنا ونعـتـرف بألسنتنا أن الأنبياء كانوا على الـحق المبيـن أى الواضح الذى لا مريـة فيه ولا شك."]}, {"id": "qibla", "title": "أهل القبلة والإيمان", "description": "بيان تسمية أهل القبلة مسلمين مؤمنين وضابط ذلك.", "icon": "fa-people-group", "paragraphs": ["(ونسمى أهل قـبلتنا مسلميـن مؤمنيـن ما داموا بـما جاء به الـنبـى ﷺ معـتـرفيـن)ولو ارتكبوا الذنوب طالما لـم يصلوا إلـى حد الكفر ولا نقول كما يقول الـخوارج من ارتكب معصية ولو صغيـرة فهو كافر ولا نقول كما تقول المعتزلة من ارتكب كبيـرة ليس بـمسلم ولا كافر. وقولهرحمه اللهما داموا بـما جاء به الـنبـى ﷺ معـتـرفيـن(وله بكل ما قاله وأخبـر مصدقيـن غـيـر منـكرين) أوضح به ما قبله لـيعلم أن مـجرد الـتوجه إلـىقـبلتنا لا يدل على حقيقة الإيـمان بالـنبـى ﷺ أى لا يكون الإنسان مؤمنا ولا مسلما ما لـم يكن فـى قلبه مصدقا بالـنبـى ﷺ ومقرا بـما جاء به لأن كثيـرا من الـناس يتوجهون إلـى قـبلتنا ولـيسوا منا ولا على ديننا كالذين يدعون أن اللـه تعالـى أرسل جبـريل إلـى علـى رضى اللـه عنه لكن جبريل غلط ونزل بالوحى على مـحمد فهؤلاء وإن صلوا إلـى القبلة لـيسوا بـمؤمنيـن."]}, {"id": "conclusion", "title": "الخاتمة وروابط الدرس", "description": "خاتمة النص وروابط مشاهدة الدرس والاستماع إليه والموقع الرسمي.", "icon": "fa-link", "paragraphs": ["والله تعالى أعلم وأحكم، والحمد لله رب العالمين", "لمشاهدة الدرس:https://youtu.be/ly1uzWfOOBk?si=2ga4ZqPv7BS8z86W", "للاستماع إلى الدرس:https://soundcloud.com/shaykh-gilles-sadek/tahawiyyah_1", "الموقع الرسمي للشيخ جيل صادق:https://shaykhgillessadek.com"]}];
+
+const KEYS = {
+  favorites:'islamicReader.favorites',
+  theme:'islamicReader.theme',
+  font:'islamicReader.font',
+  fontSize:'islamicReader.fontSize',
+  lastSection:'islamicReader.lastSection',
+  scrollPrefix:'islamicReader.scroll.'
+};
+
+const state = {
+  currentSection:null,
+  favorites:new Set(JSON.parse(localStorage.getItem(KEYS.favorites) || '[]')),
+  settings:{
+    theme:localStorage.getItem(KEYS.theme) || 'light',
+    font:localStorage.getItem(KEYS.font) || 'Cairo',
+    fontSize:Math.min(30,Math.max(16,Number(localStorage.getItem(KEYS.fontSize)) || 20))
+  }
+};
+
+const $ = s => document.querySelector(s);
+const pages = ['homePage','sectionPage','favoritesPage','settingsPage'];
+
+function normalizeArabic(text=''){
+  return text.toLowerCase()
+    .replace(/[\u064B-\u065F\u0670\u06D6-\u06ED]/g,'')
+    .replace(/ـ/g,'')
+    .replace(/[أإآٱ]/g,'ا').replace(/ى/g,'ي').replace(/ؤ/g,'و').replace(/ئ/g,'ي')
+    .replace(/\s+/g,' ').trim();
+}
+function escapeHTML(s=''){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));}
+function linkify(s=''){
+  const safe=escapeHTML(s);
+  return safe.replace(/(https?:\/\/[^\s<]+)/g, url=>`<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`);
+}
+function wordCount(section){return section.paragraphs.join(' ').trim().split(/\s+/).filter(Boolean).length;}
+function readingMinutes(section){return Math.max(1,Math.ceil(wordCount(section)/200));}
+function getSection(id){return sections.find(s=>s.id===id);}
+function showPage(id){pages.forEach(p=>$('#'+p).classList.toggle('active',p===id));window.scrollTo({top:0,behavior:'auto'});updateNav(id);}
+function updateNav(page){
+  $('#homeBtn').classList.toggle('active',page==='homePage');
+  $('#favoritesBtn').classList.toggle('active',page==='favoritesPage');
+  $('#settingsBtn').classList.toggle('active',page==='settingsPage');
+}
+function createCard(section){
+  const el=document.createElement('article');
+  el.className='card'; el.tabIndex=0; el.dataset.id=section.id;
+  el.innerHTML=`<div class="card-icon" aria-hidden="true">📖</div><h3>${escapeHTML(section.title)}</h3><p>${escapeHTML(section.description)}</p><div class="card-meta"><span>${section.paragraphs.length} فقرة • ${readingMinutes(section)} د</span><span class="card-arrow"><i class="fa-solid fa-arrow-left"></i></span></div>`;
+  const open=()=>openSection(section.id);
+  el.addEventListener('click',open); el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}});
+  el.addEventListener('pointerdown',makeRipple);
+  return el;
+}
+function renderCards(){
+  const grid=$('#cardsGrid'); grid.innerHTML=''; sections.forEach(s=>grid.appendChild(createCard(s)));
+  $('#sectionsCount').textContent=`${sections.length} قسمًا`;
+  renderContinue();
+}
+function renderFavorites(){
+  const grid=$('#favoritesGrid'); grid.innerHTML='';
+  const list=sections.filter(s=>state.favorites.has(s.id));
+  if(!list.length){grid.innerHTML='<div class="empty-state" style="grid-column:1/-1"><i class="fa-regular fa-bookmark"></i><h3>لا توجد أقسام مفضلة بعد</h3><p>أضف أي قسم إلى المفضلة من أدوات القراءة.</p></div>';return;}
+  list.forEach(s=>grid.appendChild(createCard(s)));
+}
+function renderContinue(){
+  const id=localStorage.getItem(KEYS.lastSection), section=getSection(id), box=$('#continueBox');
+  if(section){box.classList.add('show');$('#continueText').textContent=`متابعة: ${section.title}`;$('#continueBtn').onclick=()=>openSection(section.id);} else box.classList.remove('show');
+}
+function openSection(id,restoreScroll=true){
+  const section=getSection(id); if(!section)return;
+  state.currentSection=section;
+  localStorage.setItem(KEYS.lastSection,id);
+  $('#readerTitle').textContent=section.title; $('#readerDesc').textContent=section.description;
+  $('#wordCount').textContent=wordCount(section).toLocaleString('ar'); $('#readTime').textContent=readingMinutes(section).toLocaleString('ar'); $('#paragraphCount').textContent=section.paragraphs.length.toLocaleString('ar');
+  const article=$('#articleContent'); article.innerHTML='';
+  section.paragraphs.forEach(text=>{const p=document.createElement('p');p.innerHTML=linkify(text);article.appendChild(p);});
+  updateFavoriteButton(); showPage('sectionPage');
+  history.replaceState(null,'',`#section=${encodeURIComponent(id)}`);
+  requestAnimationFrame(()=>{if(restoreScroll){const y=Number(localStorage.getItem(KEYS.scrollPrefix+id))||0;window.scrollTo({top:y,behavior:'auto'});}updateProgress();});
+}
+function setFavorite(id,on){if(on)state.favorites.add(id);else state.favorites.delete(id);localStorage.setItem(KEYS.favorites,JSON.stringify([...state.favorites]));updateFavoriteButton();renderFavorites();}
+function updateFavoriteButton(){const b=$('#favoriteBtn');if(!state.currentSection)return;const on=state.favorites.has(state.currentSection.id);b.classList.toggle('active',on);b.innerHTML=on?'<i class="fa-solid fa-bookmark"></i><span>محفوظ</span>':'<i class="fa-regular fa-bookmark"></i><span>مفضلة</span>';}
+function applySettings(){
+  document.documentElement.dataset.theme=state.settings.theme;
+  document.documentElement.style.setProperty('--font-body',`'${state.settings.font}', sans-serif`);
+  document.documentElement.style.setProperty('--reader-size',state.settings.fontSize+'px');
+  $('#fontSelect').value=state.settings.font;$('#fontSizeRange').value=state.settings.fontSize;$('#fontSizeLabel').textContent=state.settings.fontSize;
+  document.querySelectorAll('[data-theme-choice]').forEach(b=>b.classList.toggle('active',b.dataset.themeChoice===state.settings.theme));
+}
+function saveSettings(){localStorage.setItem(KEYS.theme,state.settings.theme);localStorage.setItem(KEYS.font,state.settings.font);localStorage.setItem(KEYS.fontSize,String(state.settings.fontSize));applySettings();}
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove('show'),2200);}
+async function copyCurrent(){if(!state.currentSection)return;const text=[state.currentSection.title,...state.currentSection.paragraphs].join('\n\n');try{await navigator.clipboard.writeText(text);toast('تم نسخ المحتوى');}catch{fallbackCopy(text);}}
+function fallbackCopy(text){const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();toast('تم نسخ المحتوى');}
+async function shareCurrent(){
+  if(!state.currentSection)return; const text=state.currentSection.paragraphs.join('\n\n');
+  if(navigator.share){try{await navigator.share({title:state.currentSection.title,text});}catch(e){if(e.name!=='AbortError')toast('تعذر فتح المشاركة');}}
+  else {fallbackCopy(state.currentSection.title+'\n\n'+text);toast('المشاركة غير متاحة؛ تم نسخ النص');}
+}
+function makeRipple(e){const el=e.currentTarget,rect=el.getBoundingClientRect(),size=Math.max(rect.width,rect.height),r=document.createElement('span');r.className='ripple';r.style.width=r.style.height=size+'px';r.style.left=(e.clientX-rect.left-size/2)+'px';r.style.top=(e.clientY-rect.top-size/2)+'px';el.appendChild(r);setTimeout(()=>r.remove(),600);}
+function doSearch(q){
+  const term=normalizeArabic(q); if(!term){closeSearch();return;}
+  const results=sections.filter(s=>normalizeArabic(s.title+' '+s.description+' '+s.paragraphs.join(' ')).includes(term));
+  $('#searchCount').textContent=`(${results.length})`; const box=$('#searchResults');box.innerHTML='';
+  if(!results.length){box.innerHTML='<div class="empty-state"><i class="fa-solid fa-magnifying-glass"></i><h3>لا توجد نتائج</h3><p>جرّب كلمة أخرى.</p></div>';}
+  results.forEach(s=>{const item=document.createElement('div');item.className='search-result';const snippet=s.paragraphs.join(' ').slice(0,220);item.innerHTML=`<h4>${escapeHTML(s.title)}</h4><p>${escapeHTML(snippet)}${snippet.length>=220?'…':''}</p>`;item.onclick=()=>{closeSearch();$('#globalSearch').value='';openSection(s.id,false);};box.appendChild(item);});
+  $('#searchBackdrop').classList.add('show');
+}
+function closeSearch(){$('#searchBackdrop').classList.remove('show');}
+function updateProgress(){
+  const active=$('#sectionPage').classList.contains('active');$('#readingProgress').style.display=active?'block':'none';
+  if(!active)return;
+  const doc=document.documentElement,max=doc.scrollHeight-window.innerHeight,p=max>0?(window.scrollY/max)*100:0;$('#readingProgress span').style.width=Math.min(100,Math.max(0,p))+'%';$('#toTop').classList.toggle('show',window.scrollY>500);
+  if(state.currentSection)localStorage.setItem(KEYS.scrollPrefix+state.currentSection.id,String(Math.round(window.scrollY)));
+}
+function goHome(){state.currentSection=null;history.replaceState(null,'','#home');showPage('homePage');renderContinue();$('#toTop').classList.remove('show');$('#readingProgress').style.display='none';}
+function route(){const hash=location.hash;if(hash.startsWith('#section=')){openSection(decodeURIComponent(hash.split('=')[1]));}else if(hash==='#favorites'){showPage('favoritesPage');renderFavorites();}else if(hash==='#settings'){showPage('settingsPage');}else goHome();}
+
+// Navigation
+$('#brandHome').onclick=goHome;$('#brandHome').onkeydown=e=>{if(e.key==='Enter')goHome();};$('#homeBtn').onclick=goHome;$('#backHome').onclick=goHome;
+$('#favoritesBtn').onclick=()=>{history.replaceState(null,'','#favorites');showPage('favoritesPage');renderFavorites();};
+$('#settingsBtn').onclick=()=>{history.replaceState(null,'','#settings');showPage('settingsPage');};
+$('#favoriteBtn').onclick=()=>{if(state.currentSection)setFavorite(state.currentSection.id,!state.favorites.has(state.currentSection.id));};
+$('#copyBtn').onclick=copyCurrent;$('#shareBtn').onclick=shareCurrent;
+$('#fontMinus').onclick=()=>{state.settings.fontSize=Math.max(16,state.settings.fontSize-1);saveSettings();};$('#fontPlus').onclick=()=>{state.settings.fontSize=Math.min(30,state.settings.fontSize+1);saveSettings();};
+$('#fontSelect').onchange=e=>{state.settings.font=e.target.value;saveSettings();};$('#fontSizeRange').oninput=e=>{state.settings.fontSize=Number(e.target.value);saveSettings();};
+document.querySelectorAll('[data-theme-choice]').forEach(b=>b.onclick=()=>{state.settings.theme=b.dataset.themeChoice;saveSettings();});
+$('#resetSettings').onclick=()=>{state.settings={theme:'light',font:'Cairo',fontSize:20};saveSettings();toast('تمت إعادة ضبط الإعدادات');};
+$('#globalSearch').addEventListener('input',e=>doSearch(e.target.value));$('#closeSearch').onclick=closeSearch;$('#searchBackdrop').onclick=e=>{if(e.target===$('#searchBackdrop'))closeSearch();};document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSearch();});
+$('#toTop').onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
+let scrollTick=false;window.addEventListener('scroll',()=>{if(!scrollTick){scrollTick=true;requestAnimationFrame(()=>{updateProgress();scrollTick=false;});}},{passive:true});
+window.addEventListener('hashchange',route);
+
+applySettings();renderCards();renderFavorites();route();
+</script>
+</body>
+</html>
